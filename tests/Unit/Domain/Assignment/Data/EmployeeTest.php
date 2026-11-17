@@ -11,15 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 final class EmployeeTest extends TestCase
 {
-    public function test_it_maps_the_input_json_shape(): void
-    {
-        $employee = Employee::fromArray(['employeeId' => 4, 'skillLevel' => 3, 'hourlyRate' => 300]);
-
-        $this->assertSame(4, $employee->id);
-        $this->assertSame(3, $employee->skillLevel);
-        $this->assertSame(300.0, $employee->hourlyRate);
-    }
-
     public function test_it_can_perform_tasks_at_or_below_its_skill_level(): void
     {
         $employee = new Employee(1, 2, 100);

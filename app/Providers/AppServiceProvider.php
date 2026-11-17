@@ -12,9 +12,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->when(DatasetRepository::class)
-            ->needs('$directory')
-            ->give(fn (): string => resource_path('datasets'));
+        $this->app->bind(DatasetRepository::class, fn (): DatasetRepository => new DatasetRepository(
+            resource_path(DatasetRepository::SAMPLE_EMPLOYEES),
+            resource_path(DatasetRepository::SAMPLE_TASKS),
+        ));
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Domain\Assignment\AssignmentSolver;
 use App\Domain\Assignment\Data\AssignmentResult;
 use App\Domain\Assignment\Enums\Variant;
 use App\Repositories\DatasetRepository;
+use App\Support\AssignmentInput;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -17,12 +18,12 @@ use Tests\TestCase;
  */
 final class SampleDatasetTest extends TestCase
 {
-    public function test_the_bundled_dataset_loads(): void
+    public function test_the_bundled_dataset_loads_and_passes_validation(): void
     {
-        $dataset = $this->app->make(DatasetRepository::class);
+        $input = AssignmentInput::validate($this->app->make(DatasetRepository::class)->load());
 
-        $this->assertCount(10, $dataset->employees());
-        $this->assertCount(30, $dataset->tasks());
+        $this->assertCount(10, $input->employees);
+        $this->assertCount(30, $input->tasks);
     }
 
     public function test_min_cost_on_the_sample_data(): void
@@ -47,17 +48,17 @@ final class SampleDatasetTest extends TestCase
         $this->assertCount(30, $result->assignments);
     }
 
-    public function test_a_missing_dataset_directory_fails_clearly(): void
+    public function test_a_missing_dataset_file_fails_clearly(): void
     {
         $this->expectException(RuntimeException::class);
 
-        (new DatasetRepository(__DIR__.'/does-not-exist'))->employees();
+        (new DatasetRepository(__DIR__.'/missing-employees.json', __DIR__.'/missing-tasks.json'))->load();
     }
 
     private function solve(Variant $variant): AssignmentResult
     {
-        $dataset = $this->app->make(DatasetRepository::class);
+        $input = AssignmentInput::validate($this->app->make(DatasetRepository::class)->load());
 
-        return $this->app->make(AssignmentSolver::class)->solve($dataset->tasks(), $dataset->employees(), $variant);
+        return $this->app->make(AssignmentSolver::class)->solve($input->tasks, $input->employees, $variant);
     }
 }

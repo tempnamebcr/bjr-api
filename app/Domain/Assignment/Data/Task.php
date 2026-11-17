@@ -21,14 +21,4 @@ final readonly class Task
             throw new InvalidArgumentException("Task {$id}: estimation must be greater than 0.");
         }
     }
-
-    /**
-     * Maps the input JSON shape ({taskId, skillLevel, estimation}) to the domain object.
-     *
-     * @param  array{taskId: int, skillLevel: int, estimation: int|float}  $data
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self($data['taskId'], $data['skillLevel'], $data['estimation']);
-    }
 }

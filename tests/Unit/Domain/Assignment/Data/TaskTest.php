@@ -10,18 +10,9 @@ use PHPUnit\Framework\TestCase;
 
 final class TaskTest extends TestCase
 {
-    public function test_it_maps_the_input_json_shape(): void
-    {
-        $task = Task::fromArray(['taskId' => 13, 'skillLevel' => 3, 'estimation' => 5]);
-
-        $this->assertSame(13, $task->id);
-        $this->assertSame(3, $task->skillLevel);
-        $this->assertSame(5.0, $task->estimation);
-    }
-
     public function test_it_accepts_fractional_estimations(): void
     {
-        $this->assertSame(1.5, Task::fromArray(['taskId' => 1, 'skillLevel' => 1, 'estimation' => 1.5])->estimation);
+        $this->assertSame(1.5, (new Task(1, 1, 1.5))->estimation);
     }
 
     public function test_it_rejects_a_skill_level_below_one(): void

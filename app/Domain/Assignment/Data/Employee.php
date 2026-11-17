@@ -22,17 +22,6 @@ final readonly class Employee
         }
     }
 
-    /**
-     * Maps the input JSON shape ({employeeId, skillLevel, hourlyRate}) to the domain object.
-     * Shape validation is the caller's job (HTTP request / CLI); this only guards domain rules.
-     *
-     * @param  array{employeeId: int, skillLevel: int, hourlyRate: int|float}  $data
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self($data['employeeId'], $data['skillLevel'], $data['hourlyRate']);
-    }
-
     /** Eligibility rule from the brief: e.skillLevel >= t.skillLevel. */
     public function canPerform(Task $task): bool
     {
