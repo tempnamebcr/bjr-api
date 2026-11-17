@@ -14,13 +14,17 @@ use LogicException;
 
 /**
  * Turns a strategy's decision (taskId => employeeId) into the full result:
- * timeline, per-employee loads, total price and makespan.
+ * timeline, per-employee loads, total price, makespan and the makespan lower bound.
  *
  * Keeping this out of the strategies means both variants are measured by exactly
  * the same code, so their numbers are directly comparable.
  */
-final class ResultBuilder
+final readonly class ResultBuilder
 {
+    public function __construct(
+        private MakespanLowerBound $lowerBound = new MakespanLowerBound,
+    ) {}
+
     /**
      * @param  list<Task>  $tasks
      * @param  list<Employee>  $employees
@@ -61,7 +65,10 @@ final class ResultBuilder
 
         $makespan = $loads === [] ? 0.0 : max($loads);
 
-        return AssignmentResult::feasible($variant, $assignments, $totalPrice, $makespan, $employeeLoads);
+        // Computed after the guards above, so the instance is known to be feasible.
+        $lowerBound = $this->lowerBound->compute($tasks, $employees);
+
+        return AssignmentResult::feasible($variant, $assignments, $totalPrice, $makespan, $employeeLoads, $lowerBound);
     }
 
     /**

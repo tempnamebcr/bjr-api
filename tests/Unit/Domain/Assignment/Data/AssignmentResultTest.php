@@ -18,7 +18,7 @@ final class AssignmentResultTest extends TestCase
         $assignments = [new Assignment(taskId: 1, employeeId: 8, start: 0, end: 2)];
         $loads = [new EmployeeLoad(employeeId: 8, totalAssignedHours: 2)];
 
-        $result = AssignmentResult::feasible(Variant::Cost, $assignments, totalPrice: 160, makespan: 2, employeeLoads: $loads);
+        $result = AssignmentResult::feasible(Variant::Cost, $assignments, totalPrice: 160, makespan: 2, employeeLoads: $loads, lowerBound: 2);
 
         $this->assertTrue($result->isFeasible());
         $this->assertSame(ResultStatus::Feasible, $result->status);
@@ -28,6 +28,15 @@ final class AssignmentResultTest extends TestCase
         $this->assertSame(2.0, $result->makespan);
         $this->assertSame($loads, $result->employeeLoads);
         $this->assertSame([], $result->unassignableTaskIds);
+        $this->assertSame(2.0, $result->lowerBound);
+        $this->assertTrue($result->isProvenOptimalMakespan());
+    }
+
+    public function test_a_makespan_above_the_lower_bound_is_not_proven_optimal(): void
+    {
+        $result = AssignmentResult::feasible(Variant::Cost, [], totalPrice: 0, makespan: 51, employeeLoads: [], lowerBound: 11);
+
+        $this->assertFalse($result->isProvenOptimalMakespan());
     }
 
     public function test_an_infeasible_result_has_no_assignments_and_null_totals(): void
@@ -41,5 +50,7 @@ final class AssignmentResultTest extends TestCase
         $this->assertNull($result->makespan);
         $this->assertSame([], $result->employeeLoads);
         $this->assertSame([5, 9], $result->unassignableTaskIds);
+        $this->assertNull($result->lowerBound);
+        $this->assertFalse($result->isProvenOptimalMakespan());
     }
 }

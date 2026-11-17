@@ -27,6 +27,7 @@ final readonly class AssignmentResult
         public ?float $makespan,
         public array $employeeLoads,
         public array $unassignableTaskIds,
+        public ?float $lowerBound,
     ) {}
 
     /**
@@ -39,18 +40,27 @@ final readonly class AssignmentResult
         float $totalPrice,
         float $makespan,
         array $employeeLoads,
+        float $lowerBound,
     ): self {
-        return new self($variant, ResultStatus::Feasible, $assignments, $totalPrice, $makespan, $employeeLoads, []);
+        return new self($variant, ResultStatus::Feasible, $assignments, $totalPrice, $makespan, $employeeLoads, [], $lowerBound);
     }
 
     /** @param  list<int>  $unassignableTaskIds */
     public static function infeasible(Variant $variant, array $unassignableTaskIds): self
     {
-        return new self($variant, ResultStatus::Infeasible, [], null, null, [], $unassignableTaskIds);
+        return new self($variant, ResultStatus::Infeasible, [], null, null, [], $unassignableTaskIds, null);
     }
 
     public function isFeasible(): bool
     {
         return $this->status === ResultStatus::Feasible;
+    }
+
+    /** True when the makespan reaches the lower bound: no schedule can finish earlier. */
+    public function isProvenOptimalMakespan(): bool
+    {
+        return $this->makespan !== null
+            && $this->lowerBound !== null
+            && $this->makespan <= $this->lowerBound + 1e-9;
     }
 }

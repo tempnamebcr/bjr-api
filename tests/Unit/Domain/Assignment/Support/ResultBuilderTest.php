@@ -38,6 +38,9 @@ final class ResultBuilderTest extends TestCase
         );
         $this->assertTrue($result->isFeasible());
         $this->assertSame(Variant::Cost, $result->variant);
+        // max(longest task 3, skill≥2: 3h/1, skill≥1: 6h/2) = 3 → this schedule is optimal.
+        $this->assertSame(3.0, $result->lowerBound);
+        $this->assertTrue($result->isProvenOptimalMakespan());
     }
 
     public function test_an_employees_tasks_run_back_to_back_in_task_id_order(): void
