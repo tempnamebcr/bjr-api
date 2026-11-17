@@ -24,17 +24,21 @@ final readonly class AssignmentInput
         public array $tasks,
     ) {}
 
-    /** @return array<string, list<string>> */
+    /**
+     * Size limits come from config/assignment.php: they cap how long one request can run.
+     *
+     * @return array<string, list<string>>
+     */
     public static function rules(): array
     {
         return [
-            'employees' => ['present', 'list'],
+            'employees' => ['present', 'list', 'max:'.config('assignment.max_employees')],
             'employees.*' => ['array:employeeId,skillLevel,hourlyRate'],
             'employees.*.employeeId' => ['required', 'integer', 'distinct'],
             'employees.*.skillLevel' => ['required', 'integer', 'min:1'],
             'employees.*.hourlyRate' => ['required', 'numeric', 'min:0'],
 
-            'tasks' => ['present', 'list'],
+            'tasks' => ['present', 'list', 'max:'.config('assignment.max_tasks')],
             'tasks.*' => ['array:taskId,skillLevel,estimation'],
             'tasks.*.taskId' => ['required', 'integer', 'distinct'],
             'tasks.*.skillLevel' => ['required', 'integer', 'min:1'],

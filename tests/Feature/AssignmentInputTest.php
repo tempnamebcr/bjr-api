@@ -44,6 +44,30 @@ final class AssignmentInputTest extends TestCase
         $this->assertSame([], $input->tasks);
     }
 
+    public function test_input_at_the_size_limits_is_accepted_and_above_is_rejected(): void
+    {
+        config(['assignment.max_tasks' => 2, 'assignment.max_employees' => 1]);
+        $employee = fn (int $id): array => ['employeeId' => $id, 'skillLevel' => 1, 'hourlyRate' => 100];
+        $task = fn (int $id): array => ['taskId' => $id, 'skillLevel' => 1, 'estimation' => 1];
+
+        $atLimit = AssignmentInput::validate(['employees' => [$employee(1)], 'tasks' => [$task(1), $task(2)]]);
+        $this->assertCount(2, $atLimit->tasks);
+
+        try {
+            AssignmentInput::validate(['employees' => [$employee(1), $employee(2)], 'tasks' => [$task(1), $task(2), $task(3)]]);
+            $this->fail('Expected a ValidationException.');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('employees', $e->errors());
+            $this->assertArrayHasKey('tasks', $e->errors());
+        }
+    }
+
+    public function test_the_default_limits_cover_the_brief_and_bound_worst_case_time(): void
+    {
+        $this->assertSame(1000, config('assignment.max_tasks'));
+        $this->assertSame(100, config('assignment.max_employees'));
+    }
+
     /** @return array<string, array{array<mixed>, string}> */
     public static function invalidInputs(): array
     {
