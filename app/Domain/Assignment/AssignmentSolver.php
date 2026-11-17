@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Assignment;
 
 use App\Domain\Assignment\Contracts\AssignmentStrategy;
+use App\Domain\Assignment\Contracts\SolvesAssignments;
 use App\Domain\Assignment\Data\AssignmentResult;
 use App\Domain\Assignment\Data\Employee;
 use App\Domain\Assignment\Data\Task;
@@ -19,8 +20,14 @@ use InvalidArgumentException;
  * Entry point of the domain (the "service" in service–repository terms):
  * validate ids → check feasibility → run the variant's strategy → measure the result.
  */
-final readonly class AssignmentSolver
+final readonly class AssignmentSolver implements SolvesAssignments
 {
+    /**
+     * Bump whenever a strategy, tie-break or the result shape changes: it's part of the
+     * cache key, so stale cached results from the old algorithm are never served.
+     */
+    public const ALGORITHM_VERSION = 1;
+
     public function __construct(
         private FeasibilityChecker $feasibility = new FeasibilityChecker,
         private ResultBuilder $resultBuilder = new ResultBuilder,

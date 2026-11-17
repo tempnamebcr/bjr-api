@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Domain\Assignment\AssignmentSolver;
+use App\Domain\Assignment\Contracts\SolvesAssignments;
 use App\Domain\Assignment\Enums\Variant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SolveAssignmentRequest;
@@ -20,7 +20,7 @@ use Illuminate\Validation\Rule;
  */
 final class AssignmentController extends Controller
 {
-    public function __construct(private readonly AssignmentSolver $solver) {}
+    public function __construct(private readonly SolvesAssignments $solver) {}
 
     /** GET /api/v1/assignments?variant=cost|makespan|all — solves the bundled sample dataset. */
     public function index(Request $request, DatasetRepository $dataset): AssignmentResponseResource

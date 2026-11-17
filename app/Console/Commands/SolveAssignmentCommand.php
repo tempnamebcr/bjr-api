@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Domain\Assignment\AssignmentSolver;
+use App\Domain\Assignment\Contracts\SolvesAssignments;
 use App\Domain\Assignment\Data\AssignmentResult;
 use App\Domain\Assignment\Enums\Variant;
 use App\Http\Resources\AssignmentResponseResource;
@@ -30,7 +30,7 @@ final class SolveAssignmentCommand extends Command
 
     protected $description = 'Assign tasks to employees using the min-cost and/or min-makespan variant';
 
-    public function handle(AssignmentSolver $solver): int
+    public function handle(SolvesAssignments $solver): int
     {
         $variants = $this->variants();
         if ($variants === null) {
