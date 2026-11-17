@@ -7,21 +7,42 @@ namespace App\Domain\Assignment\Strategies;
 use App\Domain\Assignment\Contracts\AssignmentStrategy;
 use App\Domain\Assignment\Data\Employee;
 use App\Domain\Assignment\Data\Task;
+use App\Domain\Assignment\Support\MakespanImprover;
+use App\Domain\Assignment\Support\MakespanLowerBound;
 use LogicException;
 
 /**
  * Minimum makespan: a heuristic, because the problem (parallel machines with eligibility) is NP-hard.
  *
- * Construction is hierarchical LPT (Longest Processing Time first), O(T log T + T·E):
- * - Most constrained first (skill DESC): senior-only tasks are placed while seniors are still free,
- *   so flexible low-skill work can't crowd them out. Eligibility is nested, so the low-skill
- *   tasks placed last can always go to anyone.
- * - Longest first (estimation DESC): big tasks are hard to fit; small ones fill the gaps at the end.
- * - Each task goes to the least-loaded eligible employee (tie: cheaper rate, then lower id).
+ * 1. Construction is hierarchical LPT (Longest Processing Time first), O(T log T + T·E):
+ *    - Most constrained first (skill DESC): senior-only tasks are placed while seniors are still free,
+ *      so flexible low-skill work can't crowd them out. Eligibility is nested, so the low-skill
+ *      tasks placed last can always go to anyone.
+ *    - Longest first (estimation DESC): big tasks are hard to fit; small ones fill the gaps at the end.
+ *    - Each task goes to the least-loaded eligible employee (tie: cheaper rate, then lower id).
+ * 2. MakespanImprover then applies local search (moves/swaps), stopping at the lower bound,
+ *    and lowers cost without raising the makespan.
  */
-final class MinMakespanStrategy implements AssignmentStrategy
+final readonly class MinMakespanStrategy implements AssignmentStrategy
 {
+    public function __construct(
+        private MakespanLowerBound $lowerBound = new MakespanLowerBound,
+        private MakespanImprover $improver = new MakespanImprover,
+    ) {}
+
     public function assign(array $tasks, array $employees): array
+    {
+        $constructed = $this->construct($tasks, $employees);
+
+        return $this->improver->improve($tasks, $employees, $constructed, $this->lowerBound->compute($tasks, $employees));
+    }
+
+    /**
+     * @param  list<Task>  $tasks
+     * @param  list<Employee>  $employees
+     * @return array<int, int>
+     */
+    private function construct(array $tasks, array $employees): array
     {
         usort($tasks, fn (Task $a, Task $b): int => [$b->skillLevel, $b->estimation, $a->id] <=> [$a->skillLevel, $a->estimation, $b->id]);
 

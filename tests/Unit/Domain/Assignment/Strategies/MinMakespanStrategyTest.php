@@ -67,6 +67,15 @@ final class MinMakespanStrategyTest extends TestCase
         $this->assertSame(100.0, (new MakespanLowerBound)->compute($tasks, $employees));
     }
 
+    public function test_local_search_improves_on_plain_lpt(): void
+    {
+        $employees = [new Employee(1, 1, 100), new Employee(2, 1, 100)];
+        $tasks = [new Task(1, 1, 3), new Task(2, 1, 3), new Task(3, 1, 2), new Task(4, 1, 2), new Task(5, 1, 2)];
+
+        // LPT alone gives 7; the optimum (and lower bound) is 6.
+        $this->assertSame(6.0, $this->solve($tasks, $employees)->makespan);
+    }
+
     public function test_output_does_not_depend_on_input_order(): void
     {
         $employees = [new Employee(1, 1, 100), new Employee(2, 2, 150), new Employee(3, 3, 200)];
