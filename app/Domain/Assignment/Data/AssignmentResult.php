@@ -14,6 +14,9 @@ use App\Domain\Assignment\Enums\Variant;
  */
 final readonly class AssignmentResult
 {
+    /** Float tolerance, same value as the solver classes use. */
+    private const EPSILON = 1e-9;
+
     /**
      * @param  list<Assignment>  $assignments
      * @param  list<EmployeeLoad>  $employeeLoads
@@ -61,6 +64,6 @@ final readonly class AssignmentResult
     {
         return $this->makespan !== null
             && $this->lowerBound !== null
-            && $this->makespan <= $this->lowerBound + 1e-9;
+            && $this->makespan <= $this->lowerBound + self::EPSILON;
     }
 }

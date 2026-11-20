@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
-    && docker-php-ext-install pdo pdo_sqlite \
+    && docker-php-ext-install pdo pdo_sqlite pcntl \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apt-get clean \

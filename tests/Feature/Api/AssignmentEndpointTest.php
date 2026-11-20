@@ -16,7 +16,7 @@ final class AssignmentEndpointTest extends TestCase
         'makespan',
         'employees' => [['employeeId', 'totalAssignedHours']],
         'unassignableTaskIds',
-        'meta' => ['lowerBound', 'provenOptimal'],
+        'meta' => ['lowerBound', 'makespanProvenOptimal'],
     ];
 
     public function test_get_solves_the_sample_dataset_for_both_variants(): void
@@ -39,7 +39,8 @@ final class AssignmentEndpointTest extends TestCase
             ->assertJsonCount(10, 'variants.cost.employees')
             ->assertJsonPath('variants.makespan.makespan', 11)
             ->assertJsonPath('variants.makespan.meta.lowerBound', 11)
-            ->assertJsonPath('variants.makespan.meta.provenOptimal', true);
+            ->assertJsonPath('variants.cost.meta.makespanProvenOptimal', false)
+            ->assertJsonPath('variants.makespan.meta.makespanProvenOptimal', true);
     }
 
     public function test_get_can_select_a_single_variant(): void

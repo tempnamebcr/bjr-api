@@ -41,7 +41,8 @@ final class AssignmentResultResource extends JsonResource
             'unassignableTaskIds' => $result->unassignableTaskIds,
             'meta' => [
                 'lowerBound' => self::round($result->lowerBound),
-                'provenOptimal' => $result->isProvenOptimalMakespan(),
+                // Named for the makespan: on the cost variant it is usually false, while the cost itself is always optimal.
+                'makespanProvenOptimal' => $result->isProvenOptimalMakespan(),
             ],
         ];
     }

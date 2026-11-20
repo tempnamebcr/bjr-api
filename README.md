@@ -87,7 +87,7 @@ curl -X POST http://localhost:8000/api/v1/assignments \
       "makespan": 51,                                         // max employee load
       "employees": [{ "employeeId": 1, "totalAssignedHours": 0 }],   // every employee, idle ones at 0
       "unassignableTaskIds": [],
-      "meta": { "lowerBound": 11, "provenOptimal": false }
+      "meta": { "lowerBound": 11, "makespanProvenOptimal": false }  // makespan == lowerBound → no schedule finishes earlier
     },
     "makespan": { "...": "same shape" }
   }

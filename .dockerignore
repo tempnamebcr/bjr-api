@@ -8,5 +8,4 @@ public/hot/
 .env
 .dockerignore
 Dockerfile
-docker-entrypoint.sh
 .env.docker
