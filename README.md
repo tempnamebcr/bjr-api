@@ -18,10 +18,13 @@ On the sample data from the brief:
 
 ### With Docker
 
-The `docker-compose.yml` lives one level up, next to this folder and the Nuxt frontend (`bjr-front`).
+`docker-compose.yml` lives in this repo and also builds the Nuxt frontend from `../bjr-front`, so clone both repos side by side:
 
 ```bash
-docker compose up --build
+git clone https://github.com/tempnamebcr/bjr-api.git
+git clone https://github.com/tempnamebcr/bjr-front.git
+cd bjr-api
+docker compose up --build   # API → http://localhost:8000, UI → http://localhost:3000
 ```
 
 - The API runs on http://localhost:8000.
